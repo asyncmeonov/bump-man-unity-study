@@ -15,6 +15,8 @@ TagManager:
   - 
   - 
   - 
+  - Player
+  - Monsters
   - 
   - 
   - 
@@ -23,9 +25,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - Terrain
   - 
   - 
   - 
