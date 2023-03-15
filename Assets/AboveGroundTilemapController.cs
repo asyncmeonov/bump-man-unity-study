@@ -24,7 +24,7 @@ public class AboveGroundTilemapController : MonoBehaviour
         //TODO a smarter method that fades only adjacent blocks
     }
 
-    void OnTriggerExit2D(Collider2D other) 
+    private void OnTriggerExit2D(Collider2D other) 
     {
         Debug.Log("Exited, reverting color...");
         //v1 return all color back to normal

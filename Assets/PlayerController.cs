@@ -19,11 +19,11 @@ public class PlayerController : MonoBehaviour
         movDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         if (movDirection.x < 0)
         {
-            gameObject.GetComponentInChildren<SpriteRenderer>().flipX = true;
+            gameObject.GetComponent<SpriteRenderer>().flipX = true;
         }
-        else 
+        else if (movDirection.x > 0) 
         {
-            gameObject.GetComponentInChildren<SpriteRenderer>().flipX = false;
+            gameObject.GetComponent<SpriteRenderer>().flipX = false;
 
         }
 
