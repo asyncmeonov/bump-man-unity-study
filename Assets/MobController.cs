@@ -10,9 +10,8 @@ public class MobController : MonoBehaviour
 
     void Start()
     {
-        Debug.Log(Vector2.up + " - " + Vector2.down + " - " + Vector2.right + " - " + Vector2.left);
         rb = GetComponent<Rigidbody2D>();
-        movDirection = Vector2.right;
+        movDirection = new Vector2[] { Vector2.right, Vector2.left }[Random.Range(0, 2)];
     }
 
     // Update is called once per frame
@@ -28,45 +27,46 @@ public class MobController : MonoBehaviour
     private void OnTriggerStay2D(Collider2D other)
     {
         //Janky-ass turn logic using waypoints
-        //TODO - make it approximate
-        string turn_type = other.transform.parent.name;
-        if (other.transform.position == gameObject.transform.position) //important, these are Vector3!
+        string turnType = other.transform.parent.name;
+        if (VectorUtil.IsWithinRange(other.transform.position, gameObject.transform.position, 0.02f))
         {
-            switch (turn_type)
+            switch (turnType)
             {
                 case "LeftTIntersection":
-                    movDirection = randomizeDirection(new List<Vector2> { Vector2.up, Vector2.down, Vector2.left });
+                    movDirection = RandomizeDirection(new List<Vector2> { Vector2.up, Vector2.down, Vector2.left });
                     break;
                 case "RightTIntersection":
-                    movDirection = randomizeDirection(new List<Vector2> { Vector2.up, Vector2.down, Vector2.right });
+                    movDirection = RandomizeDirection(new List<Vector2> { Vector2.up, Vector2.down, Vector2.right });
                     break;
                 case "UpTIntersection":
-                    movDirection = randomizeDirection(new List<Vector2> { Vector2.up, Vector2.left, Vector2.right });
+                    movDirection = RandomizeDirection(new List<Vector2> { Vector2.up, Vector2.left, Vector2.right });
                     break;
                 case "DownTIntersection":
-                    movDirection = randomizeDirection(new List<Vector2> { Vector2.left, Vector2.down, Vector2.right });
+                    movDirection = RandomizeDirection(new List<Vector2> { Vector2.left, Vector2.down, Vector2.right });
                     break;
                 case "DownLeftTurn":
-                    movDirection = randomizeDirection(new List<Vector2> { Vector2.down, Vector2.left });
+                    movDirection = RandomizeDirection(new List<Vector2> { Vector2.down, Vector2.left });
                     break;
                 case "DownRightTurn":
-                    movDirection = randomizeDirection(new List<Vector2> { Vector2.down, Vector2.right });
+                    movDirection = RandomizeDirection(new List<Vector2> { Vector2.down, Vector2.right });
                     break;
                 case "UpLeftTurn":
-                    movDirection = randomizeDirection(new List<Vector2> { Vector2.up, Vector2.left });
+                    movDirection = RandomizeDirection(new List<Vector2> { Vector2.up, Vector2.left });
                     break;
                 case "UpRightTurn":
-                    movDirection = randomizeDirection(new List<Vector2> { Vector2.up, Vector2.right });
+                    movDirection = RandomizeDirection(new List<Vector2> { Vector2.up, Vector2.right });
                     break;
                 case "CrossRoads":
-                    movDirection = randomizeDirection(new List<Vector2> { Vector2.down, Vector2.right, Vector2.left, Vector2.up });
+                    movDirection = RandomizeDirection(new List<Vector2> { Vector2.down, Vector2.right, Vector2.left, Vector2.up });
                     break;
                 default: break; //do nothing if unspecified collision is encountered
             }
+
+            Debug.Log("At a " + turnType + " and chose to move " + VectorUtil.VectorToString(movDirection));
         }
     }
 
-    private Vector2 randomizeDirection(List<Vector2> availableDirections)
+    private Vector2 RandomizeDirection(List<Vector2> availableDirections)
     {
         //get current
         Vector2 cameFrom = new Vector2(rb.velocity.normalized.x * -1, rb.velocity.normalized.y * -1);
@@ -74,11 +74,4 @@ public class MobController : MonoBehaviour
         return availableDirections[Random.Range(0, availableDirections.Count)];
     }
 
-    private void printDebug(Vector2 test)
-    {
-        if(test == Vector2.down) Debug.Log("CAME FROM DOWN");
-        if(test == Vector2.up) Debug.Log("CAME FROM UP");
-        if(test == Vector2.right) Debug.Log("CAME FROM RIGHT");
-        if(test == Vector2.left) Debug.Log("CAME FROM LEFT");
-    }
 }
