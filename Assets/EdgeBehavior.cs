@@ -4,20 +4,13 @@ using UnityEngine;
 
 public class EdgeBehavior : MonoBehaviour
 {
-    // Start is called before the first frame update
     private BoxCollider2D col;
     void Start()
     {
         col = GetComponent<BoxCollider2D>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    void OnTriggerExit2D(Collider2D other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         switch (transform.name){
             case "RightEdge": transform.parent.SendMessage("TeleportToLeft", other); break;
