@@ -24,7 +24,7 @@ public class PointController : MonoBehaviour
     {
         if(other.name == "Player")
         {
-            transform.parent.SendMessage("IncreaseScore");
+            transform.parent.SendMessage("PickUpBump");
             AudioSource.PlayClipAtPoint(audioSource.clip, gameObject.transform.position);
             Destroy(gameObject);
         }

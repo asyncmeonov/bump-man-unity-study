@@ -14,11 +14,6 @@ public class MobController : MonoBehaviour
         movDirection = new Vector2[] { Vector2.right, Vector2.left }[Random.Range(0, 2)];
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
     void FixedUpdate()
     {
         rb.velocity = movDirection * movSpeed;
@@ -61,14 +56,11 @@ public class MobController : MonoBehaviour
                     break;
                 default: break; //do nothing if unspecified collision is encountered
             }
-
-            Debug.Log("At a " + turnType + " and chose to move " + VectorUtil.VectorToString(movDirection));
         }
     }
 
     private Vector2 RandomizeDirection(List<Vector2> availableDirections)
     {
-        //get current
         Vector2 cameFrom = new Vector2(rb.velocity.normalized.x * -1, rb.velocity.normalized.y * -1);
         availableDirections.Remove(cameFrom);
         return availableDirections[Random.Range(0, availableDirections.Count)];
