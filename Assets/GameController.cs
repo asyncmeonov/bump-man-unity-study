@@ -31,6 +31,5 @@ public class GameController : MonoBehaviour
         score++;
         tweakSlider.value += bumpValue;
         scoreText.text = score.ToString().PadLeft(3,'0');
-        Debug.Log("Score: "+score);
     } 
 }
