@@ -22,10 +22,19 @@ public class PlayerController : MonoBehaviour
         if (movDirection.x < 0)
         {
             gameObject.GetComponent<SpriteRenderer>().flipX = true;
+            foreach (var sprite in gameObject.GetComponentsInChildren<SpriteRenderer>())
+            {
+                sprite.flipX = true;
+            }
+            
         }
         else if (movDirection.x > 0)
         {
             gameObject.GetComponent<SpriteRenderer>().flipX = false;
+            foreach (var sprite in gameObject.GetComponentsInChildren<SpriteRenderer>())
+            {
+                sprite.flipX = false;
+            }
 
         }
 
