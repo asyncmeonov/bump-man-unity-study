@@ -25,6 +25,7 @@ public class PointController : MonoBehaviour
         if(other.name == "Player")
         {
             transform.parent.SendMessage("PickUpBump");
+            StartCoroutine(GetComponentInParent<GameController>().PickUpBump());
             AudioSource.PlayClipAtPoint(audioSource.clip, gameObject.transform.position);
             Destroy(gameObject);
         }
