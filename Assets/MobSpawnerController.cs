@@ -4,46 +4,58 @@ using UnityEngine;
 
 public class MobSpawnerController : MonoBehaviour
 {
+
+    public static MobSpawnerController Instance { get; private set; }
+
     // Start is called before the first frame update
-    [SerializeField] private GameObject mobPrefab;
-    [SerializeField] private float spawnRate; //in seconds
-    [SerializeField] private Sprite[] mobTypes;
+    [SerializeField] private GameObject _mobPrefab;
+    [SerializeField] private float _spawnRate; //in seconds
+    [SerializeField] private Sprite[] _mobTypes;
 
-    private Queue<Sprite> availableMobTypes;
-    private int mobCount = 0;
+    private Queue<Sprite> _availableMobTypes;
+    private int _mobCount = 0;
 
-    private float elapsedTime = 0f;
-    void Start()
+    private float _elapsedTime = 0f;
+
+    private void Awake()
     {
-        availableMobTypes = new Queue<Sprite>(mobTypes);
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+        _availableMobTypes = new Queue<Sprite>(_mobTypes);
     }
 
     // Update is called once per frame
     void Update()
     {
-        elapsedTime += Time.deltaTime;
-        if (elapsedTime > spawnRate)
+        _elapsedTime += Time.deltaTime;
+        if (_elapsedTime > _spawnRate)
         {
             SpawnMob();
         }
     }
 
 
-    private void SpawnMob()
+    public void SpawnMob()
     {
-        if(mobCount < 4)
+        if (_mobCount < 4)
         {
-            elapsedTime = 0f;
-            mobCount++;
-            GameObject mob = Instantiate(mobPrefab, transform.position, Quaternion.identity);
-            mob.GetComponent<SpriteRenderer>().sprite = availableMobTypes.Dequeue();
+            _elapsedTime = 0;
+            _mobCount++;
+            GameObject mob = Instantiate(_mobPrefab, transform.position, Quaternion.identity);
+            mob.GetComponent<SpriteRenderer>().sprite = _availableMobTypes.Dequeue();
         }
     }
 
-    private void KillMob(GameObject mob)
+    public void KillMob(GameObject mob)
     {
-        availableMobTypes.Enqueue(mob.GetComponent<SpriteRenderer>().sprite);
-        mobCount--;
+        _availableMobTypes.Enqueue(mob.GetComponent<SpriteRenderer>().sprite);
+        _mobCount--;
         Destroy(mob);
     }
 }
