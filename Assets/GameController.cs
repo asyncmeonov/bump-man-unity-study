@@ -14,10 +14,11 @@ public class GameController : MonoBehaviour
     [SerializeField] Slider tweakSlider;
     [SerializeField] float tweakDecay;
     [SerializeField] float bumpValue;
-    [SerializeField] GameObject player;
     [SerializeField] Image fireIcon;
+    [SerializeField] Image flashImg;
 
     private int score = 0;
+    private bool _hasEnteredTweak = false;
 
     private Camera _playerCam;
     
@@ -35,19 +36,21 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
+        flashImg.gameObject.SetActive(true);
+        flashImg.color = new Color(1,1,1,0);
         fireIcon.enabled = false;
         tweakSlider.value = 0;
-        _playerCam = player.GetComponentInChildren<Camera>();
+        _playerCam = PlayerController.Instance.GetComponentInChildren<Camera>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (player.GetComponent<PlayerController>().GetIsTweaking() && tweakSlider.value > 0)
+        if (PlayerController.Instance.IsTweaking && tweakSlider.value > 0)
         {
             tweakSlider.value -= 2 * tweakDecay;
         }
-        else if (!player.GetComponent<PlayerController>().GetIsTweaking() && tweakSlider.value > 0)
+        else if (!PlayerController.Instance.IsTweaking && tweakSlider.value > 0)
         {
             tweakSlider.value -= tweakDecay;
         }
@@ -60,21 +63,18 @@ public class GameController : MonoBehaviour
         {
             //we are tweaking!
             fireIcon.enabled = true;
-            player.SendMessage("SetIstweaking", true);
-            //camera logic
-            _playerCam.orthographicSize = Mathf.MoveTowards(_playerCam.orthographicSize, 11f, 0.2f);
-            float tempXZoomOut = Mathf.MoveTowards(_playerCam.transform.position.x, 0f, 0.2f);
-            _playerCam.transform.position = new Vector3(tempXZoomOut, _playerCam.transform.position.y, _playerCam.transform.position.z);
+            PlayerController.Instance.IsTweaking = true;
+            if(!_hasEnteredTweak)
+            {
+                StartCoroutine(FlashBang());
+                SoundController.Instance.PlayZoomWoosh();
+            }
         }
         else
         {
+            _hasEnteredTweak = false;
             fireIcon.enabled = false;
-            player.SendMessage("SetIstweaking", false);
-            //camera logic
-            _playerCam.orthographicSize = Mathf.MoveTowards(_playerCam.orthographicSize, 2f, 0.1f);
-            float tempXZoomIn = Mathf.MoveTowards(_playerCam.transform.position.x, player.transform.position.x, 0.1f);
-            float tempYZoomIn = Mathf.MoveTowards(_playerCam.transform.position.y, player.transform.position.y, 0.2f);
-            _playerCam.transform.position = new Vector3(tempXZoomIn, tempYZoomIn, -3);
+            PlayerController.Instance.IsTweaking = false;
         }
     }
 
@@ -91,6 +91,17 @@ public class GameController : MonoBehaviour
         {
             tweakSlider.value = Mathf.MoveTowards(tweakSlider.value, tweakSlider.value + bumpValue, 0.01f);
             yield return null;
+        }
+    }
+
+    public IEnumerator FlashBang()
+    {
+        _hasEnteredTweak = true;
+        flashImg.color = new Color(1,1,1,1);
+        yield return new WaitForSeconds(0.25f);
+        while (flashImg.color.a > 0)
+        {
+            flashImg.color = new Color(1,1,1,Mathf.MoveTowards(flashImg.color.a, 0f, 0.001f));
         }
     }
 }

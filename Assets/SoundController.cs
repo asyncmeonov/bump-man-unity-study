@@ -7,6 +7,7 @@ public class SoundController : MonoBehaviour
 
     //Sound Library
     [SerializeField] private AudioClip[] pickupSounds;
+    [SerializeField] private AudioClip zoomWoosh;
 
 
     public static SoundController Instance {get; private set;}
@@ -27,15 +28,11 @@ public class SoundController : MonoBehaviour
         _audioSource = GetComponent<AudioSource>();
     }
 
-    public void PlaySound(AudioClip clip)
-    {
-        _audioSource.PlayOneShot(clip);
-    }
+    public void PlaySound(AudioClip clip) => _audioSource.PlayOneShot(clip);
 
-    public void PlayPickupSound()
-    {
-        _audioSource.PlayOneShot(pickupSounds[Random.Range(0, pickupSounds.Length)]);
-    }
+    public void PlayPickupSound() => _audioSource.PlayOneShot(pickupSounds[Random.Range(0, pickupSounds.Length)]);
+
+    public void PlayZoomWoosh() => _audioSource.PlayOneShot(zoomWoosh);
 
 
 }

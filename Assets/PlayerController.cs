@@ -4,21 +4,28 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance {get; private set;}
     [SerializeField] private float _movSpeed = 2f;
-    [SerializeField] private Sprite[] sprites;
     private Rigidbody2D _rb;
     private SpriteRenderer _sr;
     private Vector2 _movDirection;
     private Animator _anim;
-
     private bool _isTweaking;
 
+    public bool IsTweaking { get => _isTweaking; set => _isTweaking = value; }
 
-    public void SetIstweaking(bool value)
+        private void Awake()
     {
-        _isTweaking = value;
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
     }
-    public bool GetIsTweaking() => _isTweaking;
+
     void Start()
     {
 
@@ -31,28 +38,24 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame - good for gathering information, but never for updating sprites
     void Update()
     {
+        _anim.SetBool("isTweaking", _isTweaking);
         _movDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        if (_movDirection.x < 0)
+       
+        switch (_movDirection.x)
         {
-            _sr.flipX = true;
+            case < 0:
+                _sr.flipX = true;
 
-        }
-        else if (_movDirection.x > 0)
-        {
-            _sr.flipX = false;
+                break;
+            case > 0:
+                _sr.flipX = false;
+                break;
         }
 
-        //TODO this does not work because the Animator is overriding it
-        //I might need to put the Animator in a separate object
-        //TODO research animation controllers
-        if (_isTweaking)
-        {
-            _sr.sprite = sprites[0];
-        }
-        else
-        {
-            _sr.sprite = sprites[1];
-        }
+
+        _movSpeed = IsTweaking? 3f : 2f;
+
+        
 
     }
 
