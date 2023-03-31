@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public static PlayerController Instance {get; private set;}
+    public static PlayerController Instance { get; private set; }
     [SerializeField] private float _movSpeed = 2f;
+    [SerializeField] private AudioClip[] _pickupSfx;
     private Rigidbody2D _rb;
     private SpriteRenderer _sr;
     private Vector2 _movDirection;
@@ -14,7 +15,7 @@ public class PlayerController : MonoBehaviour
 
     public bool IsTweaking { get => _isTweaking; set => _isTweaking = value; }
 
-        private void Awake()
+    private void Awake()
     {
         if (Instance != null && Instance != this)
         {
@@ -40,7 +41,7 @@ public class PlayerController : MonoBehaviour
     {
         _anim.SetBool("isTweaking", _isTweaking);
         _movDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-       
+
         switch (_movDirection.x)
         {
             case < 0:
@@ -53,9 +54,9 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        _movSpeed = IsTweaking? 3f : 2f;
+        _movSpeed = IsTweaking ? 3f : 2f;
 
-        
+
 
     }
 
@@ -71,7 +72,7 @@ public class PlayerController : MonoBehaviour
             if (_isTweaking)
             {
                 MobSpawnerController.Instance.KillMob(other.gameObject);
-                GameController.Instance.IncreaseScore(50);
+                GameController.Instance.Score += 50;
             }
             else
             {
@@ -85,8 +86,8 @@ public class PlayerController : MonoBehaviour
     {
         if (other.name == "Point")
         {
-            StartCoroutine(GameController.Instance.PickUpBump());
-            SoundController.Instance.PlayPickupSound();
+            StartCoroutine(UIController.Instance.PickUpBump());
+            SoundController.Instance.PlayRandomSound(_pickupSfx);
             _anim.SetTrigger("hasPickedUpBump");
             Destroy(other.gameObject);
         }

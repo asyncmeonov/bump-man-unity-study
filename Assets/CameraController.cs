@@ -7,22 +7,38 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float _wideCamSize;
     [SerializeField] private float _narrowCamSize;
 
+    private BoundsInt _mapBounds;
+
+    private float _aspect;
+
+
     private Camera _cam;
     // Start is called before the first frame update
     void Start()
     {
         _cam = GetComponent<Camera>();
+        _aspect = Screen.width / Screen.height;
+        _mapBounds = new BoundsInt(-12,-20,-5,12*2,20*2,5); //established in editor and hardcoded in as map doesn't change
     }
+
 
     void FixedUpdate()
     {
         Vector3 playerPos = PlayerController.Instance.transform.position;
+
+
+        float camVertExtent = _cam.orthographicSize;
+        float camHorzExtent = _aspect * camVertExtent;
+        float leftBound = _mapBounds.min.x + camHorzExtent;
+        float rightBound = _mapBounds.max.x - camHorzExtent;
+        float bottomBound = _mapBounds.min.y + camVertExtent;
+        float topBound = _mapBounds.max.y - camVertExtent;
+
         if (PlayerController.Instance.IsTweaking)
         {
-            //_cam.transform.position = new Vector3(playerPos.x, playerPos.y, -3);
             _cam.orthographicSize = Mathf.MoveTowards(_cam.orthographicSize, _wideCamSize, 0.2f);
-            float tempXZoomOut = Mathf.MoveTowards(playerPos.x, 0f, 0.2f);
-            float tempYZoomOut = Mathf.Clamp(_cam.transform.position.y, -12, 10);
+            float tempXZoomOut = Mathf.MoveTowards(Mathf.Clamp(playerPos.x, leftBound, rightBound), 0f, 0.2f);
+            float tempYZoomOut = Mathf.Clamp(playerPos.y, bottomBound, topBound);
             _cam.transform.position = new Vector3(tempXZoomOut, tempYZoomOut, _cam.transform.position.z);
         }
         else
