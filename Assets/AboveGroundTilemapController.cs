@@ -11,7 +11,6 @@ public class AboveGroundTilemapController : MonoBehaviour
     private HashSet<Vector3Int> changedTiles;
     void Start()
     {
-        Debug.Log("AboveGroundTilemapController Script is attached");
         col = GetComponent<TilemapCollider2D>();
         tilemap = GetComponent<Tilemap>();
         tilemapColor = tilemap.color;
@@ -34,7 +33,6 @@ public class AboveGroundTilemapController : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other) 
     {
-        Debug.Log("Exited, reverting color...");
         //v1 return all color back to normal
         foreach (var changedPos in changedTiles)
         {

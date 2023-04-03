@@ -29,7 +29,6 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-
         _isTweaking = false;
         _anim = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody2D>();
@@ -52,18 +51,15 @@ public class PlayerController : MonoBehaviour
                 _sr.flipX = false;
                 break;
         }
-
-
         _movSpeed = IsTweaking ? 3f : 2f;
-
-
-
     }
 
     void FixedUpdate()
     {
         _rb.velocity = _movDirection * _movSpeed;
     }
+
+    public void EnableCollisions(bool value) => gameObject.GetComponent<CircleCollider2D>().enabled = value;
 
     void OnCollisionEnter2D(Collision2D other)
     {
@@ -76,7 +72,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                Destroy(gameObject);
+                GameController.Instance.GameOver();
             }
         }
     }
@@ -92,4 +88,5 @@ public class PlayerController : MonoBehaviour
             Destroy(other.gameObject);
         }
     }
+    
 }
