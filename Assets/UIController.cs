@@ -155,7 +155,7 @@ public class UIController : MonoBehaviour
 
         try
         {
-            if (GetLeaderboardFromFile().Max(p => p.Value) < GameController.Instance.Score)
+            if (GetLeaderboardFromFile().Max(p => p.Item2) < GameController.Instance.Score)
             {
                 scoreSubheader.text = "new high score";
             }
@@ -197,13 +197,15 @@ public class UIController : MonoBehaviour
         CloseAllMenusAndDialogs();
         _leaderBoardMenu.SetActive(true);
         TextMeshProUGUI leaderboardList = GameObject.FindGameObjectWithTag("leaderboard_list").GetComponent<TextMeshProUGUI>();
-        Dictionary<string, int> leaderboard = GetLeaderboardFromFile();
+        List<Tuple<string, int>> leaderboard = GetLeaderboardFromFile();
+        List<Tuple<string, int>> topTen = leaderboard.OrderBy(s => s.Item2).Reverse().Take(10).ToList();
 
         leaderboardList.text = "";
 
-        foreach (var item in leaderboard.OrderBy(s => s.Value))
+        foreach (var item in topTen)
         {
-            string row = item.Key + " - " + item.Value + "\n";
+            Debug.Log(item);
+            string row = item.Item2.ToString().PadLeft(3, '0') + " - " + item.Item1 + "\n";
             leaderboardList.text += row;
         }
 
@@ -216,34 +218,31 @@ public class UIController : MonoBehaviour
         Debug.Log("Playername is " + playerName);
         // Write to file
         File.AppendAllText(_leaderboardPath, System.String.Format("{0}|{1}\n", playerName, GameController.Instance.Score));
+        ShowLeaderBoardScreen();
     }
 
-    private Dictionary<string, int> GetLeaderboardFromFile()
+    private List<Tuple<string, int>> GetLeaderboardFromFile()
     {
         //TODO fix sharing violations
-        Dictionary<string, int> leaderboard = new Dictionary<string, int>();
+        List<Tuple<string, int>> leaderboard = new List<Tuple<string, int>>();
         string line;
         try
         {
             StreamReader sr = new StreamReader(_leaderboardPath);
-            line = sr.ReadLine();
-            while (line != null)
+            while ((line = sr.ReadLine()) != null)
             {
-                string player = line.Substring(0, line.LastIndexOf('|') + 1);
-                int score = int.Parse(line.Substring(line.LastIndexOf('|')));
-                leaderboard.Add(player, score);
+                string player = line.Substring(0, line.LastIndexOf('|'));
+                string score = line.Substring(line.LastIndexOf('|') + 1);
+                Tuple<string,int> entry = new Tuple<string, int>(player, int.Parse(score));
+                leaderboard.Add(entry);
             }
             sr.Close();
             return leaderboard;
         }
         catch (Exception e)
         {
-            Console.WriteLine("Exception reading file: " + e.Message);
+            Debug.Log("Exception reading file: " + e.Message);
             return leaderboard;
-        }
-        finally
-        {
-            Console.WriteLine("Executing finally block.");
         }
     }
 
