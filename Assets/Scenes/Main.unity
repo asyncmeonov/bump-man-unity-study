@@ -40047,7 +40047,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   music: {fileID: 8300000, guid: 7818c32a671da1df895c4f552e0f7226, type: 3}
   _playerPrefab: {fileID: 5608510597886231375, guid: 9f8027739adb1c39fbbedce6d1db2635, type: 3}
-  _pointsPrefab: {fileID: 8183150501269493822, guid: 810113d0c54602943af6c7a2be567b2e, type: 3}
+  _pointsPrefab: {fileID: 3618920691849411432, guid: 31d212b83d70ca130b10fab79a13aa1c, type: 3}
 --- !u!1 &2669794983309856017
 GameObject:
   m_ObjectHideFlags: 0

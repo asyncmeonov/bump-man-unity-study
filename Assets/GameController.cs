@@ -36,6 +36,7 @@ public class GameController : MonoBehaviour
     public void StartGame()
     {
         score = 0;
+        MobSpawnerController.Instance.KillAllMobs();
         Instantiate(_playerPrefab);
         Instantiate(_pointsPrefab);
         UIController.Instance.IsCameraAttached = true;

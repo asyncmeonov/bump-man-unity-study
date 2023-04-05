@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class MobSpawnerController : MonoBehaviour
     [SerializeField] private float _spawnRate; //in seconds
     [SerializeField] private Sprite[] _mobTypes;
     private Queue<Sprite> _availableMobTypes;
+
     private int _mobCount = 0;
     private int _maxMobCount = 4; //with current logic it cannot be more than 4 due to _mobTypes dependency. Consider programatically changing the sprite color
     private float _elapsedTime = 0f;
@@ -29,7 +31,6 @@ public class MobSpawnerController : MonoBehaviour
         _availableMobTypes = new Queue<Sprite>(_mobTypes);
     }
 
-    // Update is called once per frame
     void Update()
     {
         _elapsedTime += Time.deltaTime;
@@ -56,5 +57,12 @@ public class MobSpawnerController : MonoBehaviour
         _availableMobTypes.Enqueue(mob.GetComponent<SpriteRenderer>().sprite);
         _mobCount--;
         Destroy(mob);
+    }
+
+    public void KillAllMobs()
+    {
+        GameObject[] mobs = GameObject.FindGameObjectsWithTag("mob");
+        Array.ForEach(mobs, m => KillMob(m));
+
     }
 }
