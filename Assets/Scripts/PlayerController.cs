@@ -1,12 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance { get; private set; }
     [SerializeField] private float _movSpeed = 2f;
-    [SerializeField] private AudioClip[] _pickupSfx;
+    [SerializeField] private AudioEvent _pickupSfx;
     private Rigidbody2D _rb;
     private SpriteRenderer _sr;
     private Vector2 _movDirection;
@@ -83,7 +81,7 @@ public class PlayerController : MonoBehaviour
         if (other.name == "Point")
         {
             StartCoroutine(UIController.Instance.PickUpBump());
-            SoundController.Instance.PlayRandomSound(_pickupSfx);
+            var source = _pickupSfx.Play(null); //unused source for now
             _anim.SetTrigger("hasPickedUpBump");
             Destroy(other.gameObject);
         }

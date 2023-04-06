@@ -7,33 +7,54 @@ public class MusicAudioEvent : AudioEvent
 {
     #region config
     public AudioClip clip;
+    public bool loop;
+
+    public float lowPassFreq;
+    public float highPassFreq;
+
+    private AudioHighPassFilter _highPass;
+
+    private AudioLowPassFilter _lowPass;
     #endregion
 
     public override AudioSource Play(AudioSource audioSourceParam = null)
     {
-        if(clip == null)
+        if (clip == null)
         {
-            Debug.Log("Missing sound clips for "+ this);
+            Debug.Log("Missing sound clips for " + this);
             return null;
         }
 
         var source = audioSourceParam;
-        if (source== null)
+        if (source == null)
         {
-            var _obj = new GameObject("Sound", typeof(AudioSource));
+            var _obj = new GameObject("Music SoundSource", typeof(AudioSource));
             source = _obj.GetComponent<AudioSource>();
         }
 
-        source.clip = clip; //use first audio clip in array always
+        source.gameObject.AddComponent<AudioLowPassFilter>();
+        source.gameObject.AddComponent<AudioHighPassFilter>();
+
+        _highPass = source.gameObject.GetComponent<AudioHighPassFilter>();
+        _lowPass = source.gameObject.GetComponent<AudioLowPassFilter>();
+
+
+        _lowPass.cutoffFrequency = lowPassFreq;
+        _highPass.cutoffFrequency = highPassFreq;
+        source.clip = clip;
+        source.loop = loop;
         source.volume = Random.Range(volume.x, volume.y);
         source.pitch = Random.Range(pitch.x, pitch.y);
 
         source.Play();
 
-        //Destroy after playing
-        Destroy(source.gameObject, source.clip.length / source.pitch);
-
         //return configurations if we want to modify them externally
         return source;
+    }
+
+    public void Stop(AudioSource audioSourceParam)
+    {
+        //Destroy after playing
+        DestroyImmediate(audioSourceParam.gameObject);
     }
 }

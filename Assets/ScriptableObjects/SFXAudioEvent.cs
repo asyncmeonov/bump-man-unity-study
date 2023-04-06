@@ -31,22 +31,20 @@ public class SFXAudioEvent : AudioEvent
         var source = audioSourceParam;
         if (source == null)
         {
-            var _obj = new GameObject("Sound", typeof(AudioSource));
+            var _obj = new GameObject("SFX Sound Source", typeof(AudioSource));
             source = _obj.GetComponent<AudioSource>();
         }
 
         switch (playbackType)
         {
             case SFXOrderType.Concecutive:
-                source.clip = (lastPlayed != clips.Length + 1)? clips[lastPlayed + 1] : clips[0];
+                source.clip = (lastPlayed == clips.Length - 1) ? clips[0] : clips[lastPlayed + 1];
                 break;
             case SFXOrderType.Random:
                 source.clip = clips[Random.Range(0, clips.Length)];
                 break;
 
         }
-        Debug.Log(lastPlayed);
-        source.clip = clips[0]; //use first audio clip in array always
         source.volume = Random.Range(volume.x, volume.y);
         source.pitch = Random.Range(pitch.x, pitch.y);
 
@@ -55,8 +53,15 @@ public class SFXAudioEvent : AudioEvent
         //Save what was last played TODO -> monitor if the desctruction of the object after playing keeps this
         lastPlayed = System.Array.IndexOf(clips, source.clip);
 
-        //Destroy after playing
-        Destroy(source.gameObject, source.clip.length / source.pitch);
+
+#if UNITY_EDITOR
+        if (source.gameObject.name != "Audio preview")
+        {
+            Destroy(source.gameObject, source.clip.length / source.pitch);
+        }
+#else
+                Destroy(source.gameObject, source.clip.length / source.pitch);
+#endif
 
         //return configurations if we want to modify them externally
         return source;

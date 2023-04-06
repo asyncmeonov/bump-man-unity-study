@@ -12,13 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0d17929aea2874ca84f6b09f6df6c3f, type: 3}
   m_Name: sfx_snort
   m_EditorClassIdentifier: 
-  volume: {x: 1, y: 2}
-  pitch: {x: 1, y: 1}
+  volume: {x: 2, y: 2.3}
+  pitch: {x: 1, y: 1.3}
   clips:
   - {fileID: 8300000, guid: df790d2c7764a3a13be46037d21107db, type: 3}
   - {fileID: 8300000, guid: 106195bf3eef89335b95ea27477da6f4, type: 3}
   - {fileID: 8300000, guid: 68920bc751fab28849a2e488e9d96819, type: 3}
   - {fileID: 8300000, guid: 13a678c63b33109bd84b2e0426bbd25e, type: 3}
   - {fileID: 8300000, guid: 4139ca2b952b08208982397536f7defd, type: 3}
-  - {fileID: 8300000, guid: 8bda8e3dbe5379f2181e8acf198fb2e5, type: 3}
-  playbackType: 1
+  playbackType: 0

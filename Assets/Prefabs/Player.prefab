@@ -138,12 +138,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _movSpeed: 2
-  _pickupSfx:
-  - {fileID: 8300000, guid: df790d2c7764a3a13be46037d21107db, type: 3}
-  - {fileID: 8300000, guid: 106195bf3eef89335b95ea27477da6f4, type: 3}
-  - {fileID: 8300000, guid: 68920bc751fab28849a2e488e9d96819, type: 3}
-  - {fileID: 8300000, guid: 13a678c63b33109bd84b2e0426bbd25e, type: 3}
-  - {fileID: 8300000, guid: 4139ca2b952b08208982397536f7defd, type: 3}
+  _pickupSfx: {fileID: 11400000, guid: c95aab5f6f68154e59a89405defa6cc9, type: 2}
 --- !u!95 &5608510597886231344
 Animator:
   serializedVersion: 5

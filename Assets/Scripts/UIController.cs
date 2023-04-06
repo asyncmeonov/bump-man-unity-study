@@ -17,7 +17,8 @@ public class UIController : MonoBehaviour
     [SerializeField] Slider _tweakSlider;
     [SerializeField] Image _fireIcon;
     [SerializeField] Image _flashImg;
-    [SerializeField] AudioClip _zoomWooshSfx;
+    [SerializeField] AudioEvent _zoomWooshSfx;
+    [SerializeField] AudioEvent _revZoomWooshSfx;
     [SerializeField] GameObject _postProcessor;
 
 
@@ -104,11 +105,10 @@ public class UIController : MonoBehaviour
             }
             else
             {
-                if (!_hasEnteredTweak)
+                if (_hasEnteredTweak)
                 {
-                    // _zoomWooshSfx.name = "woosh_reversed";
-                    // SoundController.Instance.PlaySound(_zoomWooshSfx,false,-1);
-                    //TODO figure out how to play this reversed, maybe just use a separate clip
+                    GameController.Instance.PlayMainTheme();
+                    _revZoomWooshSfx.Play(null);
                 }
                 _hasEnteredTweak = false;
                 _fireIcon.enabled = false;
@@ -132,7 +132,8 @@ public class UIController : MonoBehaviour
 
     public IEnumerator FlashBang()
     {
-        SoundController.Instance.PlaySound(_zoomWooshSfx);
+        _zoomWooshSfx.Play(null);
+        GameController.Instance.PlayTweakTheme();
         _hasEnteredTweak = true;
         _flashImg.color = new Color(1, 1, 1, 1);
         yield return new WaitForSeconds(0.25f);
@@ -223,7 +224,6 @@ public class UIController : MonoBehaviour
 
     private List<Tuple<string, int>> GetLeaderboardFromFile()
     {
-        //TODO fix sharing violations
         List<Tuple<string, int>> leaderboard = new List<Tuple<string, int>>();
         string line;
         try
