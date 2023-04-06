@@ -4,12 +4,21 @@ using UnityEngine;
 
 public class MobController : MonoBehaviour
 {
+
+    
     [SerializeField] private float movSpeed = 2f;
     private Rigidbody2D rb;
     private Vector2 movDirection;
 
+    [Header("SFXs")]
+    [SerializeField] private AudioEvent _walkingSfx;
+    [SerializeField] private AudioEvent _alertSfx;
+
     void Start()
     {
+        GameObject soundSource = _walkingSfx.Play(null);
+        soundSource.transform.position = gameObject.transform.position;
+        soundSource.transform.parent = gameObject.transform;
         rb = GetComponent<Rigidbody2D>();
         movDirection = new Vector2[] { Vector2.right, Vector2.left }[Random.Range(0, 2)];
     }

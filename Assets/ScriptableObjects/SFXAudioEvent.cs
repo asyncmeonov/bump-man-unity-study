@@ -2,9 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum SFXOrderType
+public enum SFXPlaybackStrategy
 {
     Concecutive,
+    Random
+}
+
+public enum SFXChoiceStrategy
+{
+    Alternating,
     Random
 }
 
@@ -14,13 +20,15 @@ public class SFXAudioEvent : AudioEvent
 {
     #region config
     public AudioClip[] clips;
-    public SFXOrderType playbackType;
+    public SFXPlaybackStrategy playbackType;
+    public SFXChoiceStrategy pitchAlterationType;
 
     //The index of the clip last played
-    private int lastPlayed = 0;
+    private int _lastPlayed = 0;
+    private AudioSource _lastUsedSettings = null;
     #endregion
 
-    public override AudioSource Play(AudioSource audioSourceParam = null)
+    public override GameObject Play(AudioSource audioSourceParam = null)
     {
         if (clips.Length == 0)
         {
@@ -37,33 +45,68 @@ public class SFXAudioEvent : AudioEvent
 
         switch (playbackType)
         {
-            case SFXOrderType.Concecutive:
-                source.clip = (lastPlayed == clips.Length - 1) ? clips[0] : clips[lastPlayed + 1];
+            case SFXPlaybackStrategy.Concecutive:
+                source.clip = (_lastPlayed == clips.Length - 1) ? clips[0] : clips[_lastPlayed + 1];
                 break;
-            case SFXOrderType.Random:
+            case SFXPlaybackStrategy.Random:
                 source.clip = clips[Random.Range(0, clips.Length)];
                 break;
 
         }
-        source.volume = Random.Range(volume.x, volume.y);
-        source.pitch = Random.Range(pitch.x, pitch.y);
 
+        switch (pitchAlterationType)
+        {
+            case SFXChoiceStrategy.Random:
+                source.pitch = Random.Range(pitch.x, pitch.y);
+                break;
+            case SFXChoiceStrategy.Alternating:
+                bool isHeads = Random.Range(1, 100) > 50;
+                float stepCoef = (isHeads) ? 0.02f : -0.02f;
+                if (_lastUsedSettings != null)
+                {
+                    //TODO this does not work when looping, which is really when you want it to work
+                    source.pitch = Mathf.Clamp(_lastUsedSettings.pitch + stepCoef, pitch.x, pitch.y);
+                }
+                else
+                {
+                    source.pitch = Random.Range(pitch.x, pitch.y);
+                }
+                break;
+        }
+        source.volume = Random.Range(volume.x, volume.y);
+
+        source.loop = loop;
+
+        if (isSpaciallyAware)
+        {
+            source.rolloffMode = AudioRolloffMode.Linear;
+            source.spatialBlend = 1;
+            source.minDistance = 2;
+            source.maxDistance = 5;
+        }
+        else
+        {
+            source.spatialBlend = 0;
+        } 
         source.Play();
 
-        //Save what was last played TODO -> monitor if the desctruction of the object after playing keeps this
-        lastPlayed = System.Array.IndexOf(clips, source.clip);
+        _lastPlayed = System.Array.IndexOf(clips, source.clip);
+        _lastUsedSettings = source;
 
 
 #if UNITY_EDITOR
-        if (source.gameObject.name != "Audio preview")
+        if (source.gameObject.name != "Audio preview" && !loop)
         {
             Destroy(source.gameObject, source.clip.length / source.pitch);
         }
 #else
-                Destroy(source.gameObject, source.clip.length / source.pitch);
+        
+            Destroy(source.gameObject, source.clip.length / source.pitch);
+       
+                
 #endif
 
-        //return configurations if we want to modify them externally
-        return source;
+        //return game object with all configs if we want to modify them externally
+        return source.gameObject;
     }
 }

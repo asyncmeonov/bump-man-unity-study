@@ -137,3 +137,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movSpeed: 2
+  _walkingSfx: {fileID: 11400000, guid: 17cbb6b512ebe3ac293eb18db41b2119, type: 2}
+  _alertSfx: {fileID: 11400000, guid: 442879a617126ef3cad058bdc36cb94a, type: 2}

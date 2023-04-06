@@ -31,7 +31,7 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        _musicSource = _mainTheme.Play(null);
+        _musicSource = _mainTheme.Play(null).GetComponent<AudioSource>();
    }
 
     public void StartGame()

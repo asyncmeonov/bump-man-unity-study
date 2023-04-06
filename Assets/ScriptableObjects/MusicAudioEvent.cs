@@ -7,7 +7,6 @@ public class MusicAudioEvent : AudioEvent
 {
     #region config
     public AudioClip clip;
-    public bool loop;
 
     public float lowPassFreq;
     public float highPassFreq;
@@ -17,7 +16,7 @@ public class MusicAudioEvent : AudioEvent
     private AudioLowPassFilter _lowPass;
     #endregion
 
-    public override AudioSource Play(AudioSource audioSourceParam = null)
+    public override GameObject Play(AudioSource audioSourceParam = null)
     {
         if (clip == null)
         {
@@ -49,7 +48,7 @@ public class MusicAudioEvent : AudioEvent
         source.Play();
 
         //return configurations if we want to modify them externally
-        return source;
+        return source.gameObject;
     }
 
     public void Stop(AudioSource audioSourceParam)
