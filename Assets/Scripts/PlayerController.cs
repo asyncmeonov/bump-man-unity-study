@@ -67,6 +67,7 @@ public class PlayerController : MonoBehaviour
             {
                 MobSpawnerController.Instance.KillMob(other.gameObject);
                 GameController.Instance.Score += 50;
+                var source = _pickupSfx.Play(null);
             }
             else
             {

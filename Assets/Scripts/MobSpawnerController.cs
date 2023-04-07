@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,12 +5,11 @@ public class MobSpawnerController : MonoBehaviour
 {
 
     public static MobSpawnerController Instance { get; private set; }
+    public int MobCount { get => _mobCount; set => _mobCount = value; }
 
-    // Start is called before the first frame update
     [SerializeField] private GameObject _mobPrefab;
+    [SerializeField] private MobAssetDefinition[] _mobDefinitions;
     [SerializeField] private float _spawnRate; //in seconds
-    [SerializeField] private Sprite[] _mobTypes;
-    private Queue<Sprite> _availableMobTypes;
 
     private int _mobCount = 0;
     private int _maxMobCount = 4; //with current logic it cannot be more than 4 due to _mobTypes dependency. Consider programatically changing the sprite color
@@ -28,41 +25,36 @@ public class MobSpawnerController : MonoBehaviour
         {
             Instance = this;
         }
-        _availableMobTypes = new Queue<Sprite>(_mobTypes);
     }
 
     void Update()
     {
         _elapsedTime += Time.deltaTime;
-        if (_elapsedTime > _spawnRate)
-        {
-            SpawnMob();
-        }
+        if (_elapsedTime > _spawnRate && MobCount >= _maxMobCount) _elapsedTime = 0; //reset if max
+        else if (_elapsedTime > _spawnRate && MobCount < _maxMobCount) SpawnMob();   //spawn otherwise. there might be a simpler if
     }
 
 
     public void SpawnMob()
     {
-        if (_mobCount < _maxMobCount)
-        {
-            _elapsedTime = 0;
-            _mobCount++;
-            GameObject mob = Instantiate(_mobPrefab, transform.position, Quaternion.identity);
-            mob.GetComponent<SpriteRenderer>().sprite = _availableMobTypes.Dequeue();
-        }
+        _elapsedTime = 0;
+        MobCount++;
+        _mobPrefab.GetComponent<MobController>().mobAD = _mobDefinitions[Random.Range(0, _mobDefinitions.Length)];
+        GameObject mob = Instantiate(_mobPrefab, transform.position, Quaternion.identity);
+
     }
 
     public void KillMob(GameObject mob)
     {
-        _availableMobTypes.Enqueue(mob.GetComponent<SpriteRenderer>().sprite);
-        _mobCount--;
+        MobCount--;
+        _maxMobCount++;
         Destroy(mob);
     }
 
     public void KillAllMobs()
     {
         GameObject[] mobs = GameObject.FindGameObjectsWithTag("mob");
-        Array.ForEach(mobs, m => KillMob(m));
+        System.Array.ForEach(mobs, m => KillMob(m));
 
     }
 }

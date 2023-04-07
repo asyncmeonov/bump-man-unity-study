@@ -14,6 +14,7 @@ public class UIController : MonoBehaviour
     public bool IsCameraAttached { get => _isCameraAttached; set => _isCameraAttached = value; }
 
     [SerializeField] TextMeshProUGUI _scoreText;
+    [SerializeField] TextMeshProUGUI _copCounter;
     [SerializeField] Slider _tweakSlider;
     [SerializeField] Image _fireIcon;
     [SerializeField] Image _flashImg;
@@ -83,7 +84,8 @@ public class UIController : MonoBehaviour
             {
                 _tweakSlider.value -= _tweakDecay;
             }
-            _scoreText.text = GameController.Instance.Score.ToString().PadLeft(3, '0');
+            _scoreText.text = GameController.Instance.Score.ToString().PadLeft(4, '0');
+            _copCounter.text = MobSpawnerController.Instance.MobCount.ToString().PadLeft(2,'0');
         }
 
     }
@@ -143,29 +145,38 @@ public class UIController : MonoBehaviour
         }
     }
 
-    public void ShowEndGameScreen()
+    public void ShowEndGameScreen(bool isVictory)
     {
         IsCameraAttached = false;
         StartCoroutine(DefocusBackground());
         CloseAllMenusAndDialogs();
         _endGameMenu.SetActive(true);
         TextMeshProUGUI scoreDisplay = GameObject.FindGameObjectWithTag("end_game_score_field").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI scoreHeader = GameObject.FindGameObjectWithTag("score_header_field").GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI scoreSubheader = GameObject.FindGameObjectWithTag("score_subheader_field").GetComponent<TextMeshProUGUI>();
 
         scoreSubheader.text = "score";
 
         try
         {
-            if (GetLeaderboardFromFile().Max(p => p.Item2) < GameController.Instance.Score)
+            if (isVictory)
             {
-                scoreSubheader.text = "new high score";
+                scoreHeader.text = "Congratulations!";
+                scoreSubheader.text = "You snorted all the cocaine in the city without being caught by the police!";
             }
+            else
+            {
+                if (GetLeaderboardFromFile().Max(p => p.Item2) < GameController.Instance.Score)
+                {
+                    scoreSubheader.text = "new high score";
+                }
+            }
+
         }
         catch (InvalidOperationException e)
         {
-            Debug.Log("No previous scores found");
+            Debug.Log("No previous scores found. " + e.Message);
             scoreSubheader.text = "new high score";
-
         }
         finally
         {
@@ -206,7 +217,7 @@ public class UIController : MonoBehaviour
         foreach (var item in topTen)
         {
             Debug.Log(item);
-            string row = item.Item2.ToString().PadLeft(3, '0') + " - " + item.Item1 + "\n";
+            string row = item.Item2.ToString().PadLeft(4, '0') + " - " + item.Item1 + "\n";
             leaderboardList.text += row;
         }
 
@@ -233,7 +244,7 @@ public class UIController : MonoBehaviour
             {
                 string player = line.Substring(0, line.LastIndexOf('|'));
                 string score = line.Substring(line.LastIndexOf('|') + 1);
-                Tuple<string,int> entry = new Tuple<string, int>(player, int.Parse(score));
+                Tuple<string, int> entry = new Tuple<string, int>(player, int.Parse(score));
                 leaderboard.Add(entry);
             }
             sr.Close();

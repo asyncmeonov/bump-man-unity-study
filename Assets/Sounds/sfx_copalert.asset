@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0d17929aea2874ca84f6b09f6df6c3f, type: 3}
   m_Name: sfx_copalert
   m_EditorClassIdentifier: 
-  volume: {x: 0, y: 0}
-  pitch: {x: 0, y: 0}
+  volume: {x: 0.3, y: 0.3}
+  pitch: {x: 1, y: 1}
   loop: 0
-  clips: []
+  isSpaciallyAware: 0
+  clips:
+  - {fileID: 8300000, guid: 3af6051e4e7d28e1d88c273667255d4e, type: 3}
   playbackType: 0
   pitchAlterationType: 0
-  resample: 0

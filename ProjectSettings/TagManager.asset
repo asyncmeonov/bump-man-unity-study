@@ -9,6 +9,7 @@ TagManager:
   - score_subheader_field
   - leaderboard_list
   - mob
+  - score_header_field
   layers:
   - Default
   - TransparentFX
