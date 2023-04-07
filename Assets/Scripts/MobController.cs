@@ -11,12 +11,13 @@ public class MobController : MonoBehaviour
     private Rigidbody2D _rb;
     private Vector2 _movDirection;
     private SpriteRenderer _sr;
+    private GameObject _soundSource;
 
     void Start()
     {
-        GameObject soundSource = mobAD.walkingSfx.Play(null);
-        soundSource.transform.position = gameObject.transform.position;
-        soundSource.transform.parent = gameObject.transform;
+        _soundSource = mobAD.walkingSfx.Play(null);
+        _soundSource.transform.position = gameObject.transform.position;
+        _soundSource.transform.parent = gameObject.transform;
         _rb = GetComponent<Rigidbody2D>();
         _sr = GetComponent<SpriteRenderer>();
         _sr.sprite = mobAD.horizontalSprite;
@@ -53,6 +54,11 @@ public class MobController : MonoBehaviour
         if(GameController.Instance.IsGameRunning && PlayerController.Instance.IsTweaking)
         {
             _sr.sprite = mobAD.afraidSprite;
+            _soundSource.GetComponent<AudioSource>().Pause();
+        } 
+        else if (!_soundSource.GetComponent<AudioSource>().isPlaying)
+        {
+            _soundSource.GetComponent<AudioSource>().UnPause();    
         }
     }
 
