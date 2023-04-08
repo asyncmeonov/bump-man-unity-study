@@ -42,6 +42,7 @@ public class MusicAudioEvent : AudioEvent
         _highPass.cutoffFrequency = highPassFreq;
         source.clip = clip;
         source.loop = loop;
+        source.outputAudioMixerGroup = mixGroup;
         source.volume = Random.Range(volume.x, volume.y);
         source.pitch = Random.Range(pitch.x, pitch.y);
 

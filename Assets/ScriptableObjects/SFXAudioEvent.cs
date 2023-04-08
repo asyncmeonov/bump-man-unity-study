@@ -77,6 +77,8 @@ public class SFXAudioEvent : AudioEvent
 
         source.loop = loop;
 
+        source.outputAudioMixerGroup = mixGroup;
+
         if (isSpaciallyAware)
         {
             source.rolloffMode = AudioRolloffMode.Linear;

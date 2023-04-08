@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.UI;
 
@@ -22,17 +23,20 @@ public class UIController : MonoBehaviour
     [SerializeField] AudioEvent _revZoomWooshSfx;
     [SerializeField] GameObject _postProcessor;
 
+    [SerializeField] AudioMixer _mixer;
+
 
     [Header("Menu Screens")]
     [SerializeField] GameObject _mainMenu;
     [SerializeField] GameObject _endGameMenu;
     [SerializeField] GameObject _creditsMenu;
-    // [SerializeField] GameObject _optionsMenu;
+    [SerializeField] GameObject _optionsMenu;
     [SerializeField] GameObject _leaderBoardMenu;
     [SerializeField] GameObject _inGameHUD;
     [SerializeField] GameObject _saveScoreMenu;
 
-    //Music
+    // public float musicVol = 1f;
+    // public float sfxVol = 1f;
     float _tweakDecay;
     float _bumpValue;
     private bool _hasEnteredTweak = false;
@@ -203,6 +207,24 @@ public class UIController : MonoBehaviour
 
     }
 
+    public void ShowOptionsScreen()
+    {
+        CloseAllMenusAndDialogs();
+        _optionsMenu.SetActive(true);
+
+    }
+
+    public void SetMusicVolume(float value)
+    {
+        _mixer.SetFloat("MusicVol", Mathf.Log10(value) * 20);
+    }
+
+    public void SetSoundEffectsVolume(float value)
+    {
+        _mixer.SetFloat("SFXVol", Mathf.Log10(value) * 20);
+        _zoomWooshSfx.Play(null);
+    }
+
     public void ShowLeaderBoardScreen()
     {
         StartCoroutine(DefocusBackground());
@@ -299,5 +321,6 @@ public class UIController : MonoBehaviour
         _mainMenu.SetActive(false);
         _saveScoreMenu.SetActive(false);
         _leaderBoardMenu.SetActive(false);
+        _optionsMenu.SetActive(false);
     }
 }

@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   volume: {x: 2, y: 2.3}
   pitch: {x: 1, y: 1.3}
+  loop: 0
+  isSpaciallyAware: 0
+  mixGroup: {fileID: -6090847520234557357, guid: 878a462684b2a01628773e7ab6974fff, type: 2}
   clips:
   - {fileID: 8300000, guid: df790d2c7764a3a13be46037d21107db, type: 3}
   - {fileID: 8300000, guid: 106195bf3eef89335b95ea27477da6f4, type: 3}
@@ -21,3 +24,4 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 13a678c63b33109bd84b2e0426bbd25e, type: 3}
   - {fileID: 8300000, guid: 4139ca2b952b08208982397536f7defd, type: 3}
   playbackType: 0
+  pitchAlterationType: 0

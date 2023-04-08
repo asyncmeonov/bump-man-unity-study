@@ -16,6 +16,7 @@ MonoBehaviour:
   pitch: {x: 1, y: 1}
   loop: 0
   isSpaciallyAware: 0
+  mixGroup: {fileID: -6090847520234557357, guid: 878a462684b2a01628773e7ab6974fff, type: 2}
   clips:
   - {fileID: 8300000, guid: 3af6051e4e7d28e1d88c273667255d4e, type: 3}
   playbackType: 0
