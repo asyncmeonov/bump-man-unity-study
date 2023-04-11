@@ -35,10 +35,6 @@ public class UIController : MonoBehaviour
     [SerializeField] GameObject _inGameHUD;
     [SerializeField] GameObject _saveScoreMenu;
 
-    // public float musicVol = 1f;
-    // public float sfxVol = 1f;
-    float _tweakDecay;
-    float _bumpValue;
     private bool _hasEnteredTweak = false;
 
     private PostProcessVolume _postProcessVol;
@@ -67,8 +63,6 @@ public class UIController : MonoBehaviour
         _flashImg.color = new Color(1, 1, 1, 0);
         _fireIcon.enabled = false;
         _tweakSlider.value = 0;
-        _tweakDecay = 0.001f;
-        _bumpValue = 0.1f;
         _postProcessVol = _postProcessor.GetComponent<PostProcessVolume>();
         _isCameraAttached = false;
 
@@ -80,14 +74,7 @@ public class UIController : MonoBehaviour
     {
         if (IsCameraAttached)
         {
-            if (PlayerController.Instance.IsTweaking && _tweakSlider.value > 0)
-            {
-                _tweakSlider.value -= 2 * _tweakDecay;
-            }
-            else if (!PlayerController.Instance.IsTweaking && _tweakSlider.value > 0)
-            {
-                _tweakSlider.value -= _tweakDecay;
-            }
+            _tweakSlider.value = PlayerController.Instance.TweakValue;
             _scoreText.text = GameController.Instance.Score.ToString().PadLeft(4, '0');
             _copCounter.text = MobSpawnerController.Instance.MobCount.ToString().PadLeft(2,'0');
         }
@@ -96,14 +83,14 @@ public class UIController : MonoBehaviour
 
     void FixedUpdate()
     {
-        //consider moving the tweakertriggering logic to the Player Controller and make the UI only reflect it
+        //Janky ass logic for triggering UI changes when starting to tweak. A one-off event system would be better.
+        //Currently using _hasEnteredTweak as a one-shot monitoring flag
         if (IsCameraAttached)
         {
             if (_tweakSlider.value > 0.7)
             {
                 //we are tweaking!
                 _fireIcon.enabled = true;
-                PlayerController.Instance.IsTweaking = true;
                 if (!_hasEnteredTweak)
                 {
                     StartCoroutine(FlashBang());
@@ -118,23 +105,11 @@ public class UIController : MonoBehaviour
                 }
                 _hasEnteredTweak = false;
                 _fireIcon.enabled = false;
-                PlayerController.Instance.IsTweaking = false;
             }
         }
 
     }
 
-
-    public IEnumerator PickUpBump()
-    {
-        GameController.Instance.Score += 1;
-        float targetSliderValue = Mathf.Clamp(_tweakSlider.value + _bumpValue, 0f, 0.99f);
-        while (_tweakSlider.value <= targetSliderValue)
-        {
-            _tweakSlider.value = Mathf.MoveTowards(_tweakSlider.value, _tweakSlider.value + _bumpValue, 0.01f);
-            yield return null;
-        }
-    }
 
     public IEnumerator FlashBang()
     {

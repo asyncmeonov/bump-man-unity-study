@@ -1,11 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MobController : MonoBehaviour
 {
 
-    
+
     public MobAssetDefinition mobAD;
     [SerializeField] private float movSpeed = 2f;
     private Rigidbody2D _rb;
@@ -13,11 +12,17 @@ public class MobController : MonoBehaviour
     private SpriteRenderer _sr;
     private GameObject _soundSource;
 
+    private bool _isAfraid;
+
+    public void SetIsAfraid(bool value) => _isAfraid = value;
+    public bool GetIsAfraid() => _isAfraid;
+
     void Start()
     {
         _soundSource = mobAD.walkingSfx.Play(null);
         _soundSource.transform.position = gameObject.transform.position;
         _soundSource.transform.parent = gameObject.transform;
+        SetIsAfraid(false);
         _rb = GetComponent<Rigidbody2D>();
         _sr = GetComponent<SpriteRenderer>();
         _sr.sprite = mobAD.horizontalSprite;
@@ -51,14 +56,17 @@ public class MobController : MonoBehaviour
                 break;
         }
 
-        if(GameController.Instance.IsGameRunning && PlayerController.Instance.IsTweaking)
+        if (GetIsAfraid())
         {
             _sr.sprite = mobAD.afraidSprite;
-            _soundSource.GetComponent<AudioSource>().Pause();
-        } 
-        else if (!_soundSource.GetComponent<AudioSource>().isPlaying)
+        }
+        if (GameController.Instance.IsGameRunning && PlayerController.Instance.IsTweaking)
         {
-            _soundSource.GetComponent<AudioSource>().UnPause();    
+            _soundSource.GetComponent<AudioSource>().Pause();
+        }
+        else
+        {
+            _soundSource.GetComponent<AudioSource>().UnPause();
         }
     }
 

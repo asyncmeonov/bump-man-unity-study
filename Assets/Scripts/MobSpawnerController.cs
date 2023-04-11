@@ -12,7 +12,7 @@ public class MobSpawnerController : MonoBehaviour
     [SerializeField] private float _spawnRate; //in seconds
 
     private int _mobCount = 0;
-    private int _maxMobCount = 4; //with current logic it cannot be more than 4 due to _mobTypes dependency. Consider programatically changing the sprite color
+    private int _maxMobCount = 4; 
     private float _elapsedTime = 0f;
 
     private void Awake()
