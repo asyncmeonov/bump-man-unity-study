@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "sfx_newMusicEvent", menuName = "Audio/New Music Event")]
@@ -31,8 +29,16 @@ public class MusicAudioEvent : AudioEvent
             source = _obj.GetComponent<AudioSource>();
         }
 
-        source.gameObject.AddComponent<AudioLowPassFilter>();
-        source.gameObject.AddComponent<AudioHighPassFilter>();
+
+        if (source.gameObject.GetComponent<AudioHighPassFilter>() == null)
+        {
+            source.gameObject.AddComponent<AudioHighPassFilter>();
+        }
+
+        if (source.gameObject.GetComponent<AudioLowPassFilter>() == null)
+        {
+            source.gameObject.AddComponent<AudioLowPassFilter>();
+        }
 
         _highPass = source.gameObject.GetComponent<AudioHighPassFilter>();
         _lowPass = source.gameObject.GetComponent<AudioLowPassFilter>();

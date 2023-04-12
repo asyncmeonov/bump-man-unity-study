@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MobSpawnerController : MonoBehaviour
@@ -56,5 +55,11 @@ public class MobSpawnerController : MonoBehaviour
         GameObject[] mobs = GameObject.FindGameObjectsWithTag("mob");
         System.Array.ForEach(mobs, m => KillMob(m));
 
+    }
+
+    public void SetAllMobFrightStatus(bool isFrightened)
+    {
+        GameObject[] mobs = GameObject.FindGameObjectsWithTag("mob");
+        System.Array.ForEach(mobs, m => m.SendMessage("SetIsAfraid", isFrightened));
     }
 }
