@@ -137,8 +137,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38b19b65652b34b98b1e567a0cc2a325, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTweak:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 102900000, guid: 251716609f634449bfe8ce75c0ed78fe, type: 3}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _movSpeed: 2
   _pickupSfx: {fileID: 11400000, guid: c95aab5f6f68154e59a89405defa6cc9, type: 2}
+  _tweakDecay: 0.001
+  _bumpValue: 0.2
+  _tweakValue: 0
+  _tweakThreshold: 0.7
 --- !u!95 &5608510597886231344
 Animator:
   serializedVersion: 5

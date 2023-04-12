@@ -35,8 +35,6 @@ public class UIController : MonoBehaviour
     [SerializeField] GameObject _inGameHUD;
     [SerializeField] GameObject _saveScoreMenu;
 
-    private bool _hasEnteredTweak = false;
-
     private PostProcessVolume _postProcessVol;
 
     private bool _isCameraAttached;
@@ -76,38 +74,25 @@ public class UIController : MonoBehaviour
         {
             _tweakSlider.value = PlayerController.Instance.TweakValue;
             _scoreText.text = GameController.Instance.Score.ToString().PadLeft(4, '0');
-            _copCounter.text = MobSpawnerController.Instance.MobCount.ToString().PadLeft(2,'0');
+            _copCounter.text = MobSpawnerController.Instance.MobCount.ToString().PadLeft(2, '0');
         }
 
     }
 
-    void FixedUpdate()
-    {
-        //Janky ass logic for triggering UI changes when starting to tweak. A one-off event system would be better.
-        //Currently using _hasEnteredTweak as a one-shot monitoring flag
-        if (IsCameraAttached)
-        {
-            if (_tweakSlider.value > 0.7)
-            {
-                //we are tweaking!
-                _fireIcon.enabled = true;
-                if (!_hasEnteredTweak)
-                {
-                    StartCoroutine(FlashBang());
-                }
-            }
-            else
-            {
-                if (_hasEnteredTweak)
-                {
-                    GameController.Instance.PlayMainTheme();
-                    _revZoomWooshSfx.Play(null);
-                }
-                _hasEnteredTweak = false;
-                _fireIcon.enabled = false;
-            }
-        }
 
+    public void IsPlayerTweakingUI(bool isTweaking)
+    {
+        if (isTweaking)
+        {
+            _fireIcon.enabled = true;
+            StartCoroutine(FlashBang());
+        }
+        else
+        {
+            GameController.Instance.PlayMainTheme();
+            _revZoomWooshSfx.Play(null);
+            _fireIcon.enabled = false;
+         }    
     }
 
 
@@ -115,7 +100,6 @@ public class UIController : MonoBehaviour
     {
         _zoomWooshSfx.Play(null);
         GameController.Instance.PlayTweakTheme();
-        _hasEnteredTweak = true;
         _flashImg.color = new Color(1, 1, 1, 1);
         yield return new WaitForSeconds(0.25f);
         while (_flashImg.color.a > 0)
@@ -213,7 +197,6 @@ public class UIController : MonoBehaviour
 
         foreach (var item in topTen)
         {
-            Debug.Log(item);
             string row = item.Item2.ToString().PadLeft(4, '0') + " - " + item.Item1 + "\n";
             leaderboardList.text += row;
         }
@@ -224,9 +207,8 @@ public class UIController : MonoBehaviour
     {
         GameObject inputField = GameObject.FindGameObjectWithTag("highscore_player_name_field");
         string playerName = inputField.GetComponent<TMP_InputField>().text;
-        Debug.Log("Playername is " + playerName);
         // Write to file
-        File.AppendAllText(_leaderboardPath, System.String.Format("{0}|{1}\n", playerName, GameController.Instance.Score));
+        File.AppendAllText(_leaderboardPath, String.Format("{0}|{1}\n", playerName, GameController.Instance.Score));
         ShowLeaderBoardScreen();
     }
 

@@ -1,24 +1,34 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance { get; private set; }
+    public event Action<bool> onTweak = (bool isTweak) =>
+    {
+        Instance.IsTweaking = isTweak;
+        MobSpawnerController.Instance.SetAllMobFrightStatus(isTweak);
+        UIController.Instance.IsPlayerTweakingUI(isTweak);
+    };
+
+
     [SerializeField] private float _movSpeed = 2f;
     [SerializeField] private AudioEvent _pickupSfx;
     private Rigidbody2D _rb;
     private SpriteRenderer _sr;
     private Vector2 _movDirection;
     private Animator _anim;
+    private float _elapsedTime = 0f; 
+    private float _defaultMovSpeed = 2f;
 
 
     [Header("Tweaking Parameters")]
     [SerializeField] float _tweakDecay = 0.001f;
     [SerializeField] float _bumpValue = 0.1f;
     [SerializeField] float _tweakValue = 0f;
-    [SerializeField] float _tweakThreshold = 0.7f;
+    [SerializeField] float _tweakThreshold;
 
-    private bool _hasEnteredTweak = false;
     private bool _isTweaking;
     public bool IsTweaking { get => _isTweaking; set => _isTweaking = value; }
     public float TweakValue { get => _tweakValue; set => _tweakValue = value; }
@@ -37,7 +47,10 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        _tweakValue = 0;
+        _tweakThreshold = 0.99f;
         _isTweaking = false;
+        _movSpeed = _defaultMovSpeed;
         _anim = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody2D>();
         _sr = GetComponent<SpriteRenderer>();
@@ -62,42 +75,34 @@ public class PlayerController : MonoBehaviour
 
         if (_isTweaking && _tweakValue > 0)
         {
-            _tweakValue -= 2 * _tweakDecay; // decrease twice as fast while tweaking
+            _tweakValue -= _tweakDecay / 2; // decrease twice as slow while tweaking
         }
         else if (!_isTweaking && _tweakValue > 0)
         {
             _tweakValue -= _tweakDecay;
         }
-        _movSpeed = IsTweaking ? 3f : 2f;
+
+        if (IsTweaking)
+        {
+            _elapsedTime += Time.deltaTime;
+            _movSpeed += _elapsedTime / 100f;
+            _movSpeed = Mathf.Clamp(_movSpeed, 1f, 5f);
+        }
+        else
+        {
+            _movSpeed = Mathf.MoveTowards(_movSpeed, _defaultMovSpeed, 0.01f);
+            _elapsedTime = 0f;
+        }
+
+
+
     }
 
     void FixedUpdate()
     {
         _rb.velocity = _movDirection * _movSpeed;
-        _isTweaking = _tweakValue > _tweakThreshold;
-
-        if (_isTweaking)
-        {
-            if (!_hasEnteredTweak)
-            {
-                GameObject[] mobs = GameObject.FindGameObjectsWithTag("mob");
-                foreach (GameObject mob in mobs)
-                {
-                    mob.SendMessage("SetIsAfraid", true);
-                }
-                _hasEnteredTweak = true;
-            }
-
-        }
-        else
-        {
-            GameObject[] mobs = GameObject.FindGameObjectsWithTag("mob");
-                foreach (GameObject mob in mobs)
-                {
-                    mob.SendMessage("SetIsAfraid", false);
-                }   
-            _hasEnteredTweak = false;
-        }
+        if (_tweakValue > _tweakThreshold && !_isTweaking)onTweak?.Invoke(true);
+        if (_tweakValue <= 0 && _isTweaking) onTweak?.Invoke(false);
     }
 
     public void EnableCollisions(bool value) => gameObject.GetComponent<CircleCollider2D>().enabled = value;
@@ -109,7 +114,7 @@ public class PlayerController : MonoBehaviour
             if (_isTweaking && other.gameObject.GetComponent<MobController>().GetIsAfraid())
             {
                 MobSpawnerController.Instance.KillMob(other.gameObject);
-                GameController.Instance.Score += 50;
+                StartCoroutine(PickUp(_bumpValue * 2, 50, true));
                 var source = _pickupSfx.Play(null);
             }
             else
@@ -124,22 +129,25 @@ public class PlayerController : MonoBehaviour
     {
         if (other.name == "Point")
         {
-            StartCoroutine(PickUpBump());
+            StartCoroutine(PickUp(_bumpValue, 1, false));
             var source = _pickupSfx.Play(null); //unused source for now
             _anim.SetTrigger("hasPickedUpBump");
             Destroy(other.gameObject);
         }
     }
 
-    public IEnumerator PickUpBump()
+    public IEnumerator PickUp(float bumpValue, int scoreInc, bool ignoreTweaking)
     {
-        GameController.Instance.Score += 1;
-        float targetSliderValue = Mathf.Clamp(_tweakValue + _bumpValue, 0f, 0.99f);
-        while (_tweakValue <= targetSliderValue)
+        GameController.Instance.Score += scoreInc;
+        if (!_isTweaking || ignoreTweaking)
         {
-            _tweakValue = Mathf.MoveTowards(_tweakValue, _tweakValue + _bumpValue, 0.01f);
-            yield return null;
+            float targetSliderValue = Mathf.Clamp(_tweakValue + bumpValue, 0f, 0.99f);
+            while (_tweakValue <= targetSliderValue)
+            {
+                _tweakValue = Mathf.MoveTowards(_tweakValue, _tweakValue + bumpValue, 0.01f);
+                yield return null;
+            }
         }
-    }
 
+    }
 }
