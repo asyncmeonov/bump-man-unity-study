@@ -87,7 +87,8 @@ public class UIController : MonoBehaviour
         //Currently using _hasEnteredTweak as a one-shot monitoring flag
         if (IsCameraAttached)
         {
-            if (_tweakSlider.value > 0.7)
+        Debug.Log(PlayerController.Instance.TweakThreshold);
+            if (_tweakSlider.value > PlayerController.Instance.TweakThreshold)
             {
                 //we are tweaking!
                 _fireIcon.enabled = true;
