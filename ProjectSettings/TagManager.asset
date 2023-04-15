@@ -10,6 +10,9 @@ TagManager:
   - leaderboard_list
   - mob
   - score_header_field
+  - run_animation_left
+  - run_animation_right
+  - run_animation_righ
   layers:
   - Default
   - TransparentFX

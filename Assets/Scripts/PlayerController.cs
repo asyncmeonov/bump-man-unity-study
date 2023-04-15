@@ -2,6 +2,14 @@ using System;
 using System.Collections;
 using UnityEngine;
 
+
+enum HorizontalDir
+{
+    Left,
+    Right
+}
+
+
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance { get; private set; }
@@ -17,16 +25,19 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioEvent _pickupSfx;
     private Rigidbody2D _rb;
     private SpriteRenderer _sr;
+    private SpriteRenderer _runningRightSr;
+    private SpriteRenderer _runningLeftSr;
     private Vector2 _movDirection;
+    private HorizontalDir _direction;
     private Animator _anim;
     private float _elapsedTime = 0f; 
     private float _defaultMovSpeed = 2f;
 
 
     [Header("Tweaking Parameters")]
-    [SerializeField] float _tweakDecay = 0.001f;
-    [SerializeField] float _bumpValue = 0.1f;
-    [SerializeField] float _tweakValue = 0f;
+    [SerializeField] float _tweakDecay;
+    [SerializeField] float _bumpValue;
+    [SerializeField] float _tweakValue;
     [SerializeField] float _tweakThreshold;
 
     private bool _isTweaking;
@@ -54,6 +65,9 @@ public class PlayerController : MonoBehaviour
         _anim = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody2D>();
         _sr = GetComponent<SpriteRenderer>();
+        _runningRightSr = GameObject.FindWithTag("run_animation_right").GetComponent<SpriteRenderer>();
+        _runningLeftSr = GameObject.FindWithTag("run_animation_left").GetComponent<SpriteRenderer>();
+        HideRunningAnimation();
     }
 
     // Update is called once per frame - good for gathering information, but never for updating sprites
@@ -65,10 +79,11 @@ public class PlayerController : MonoBehaviour
         switch (_movDirection.x)
         {
             case < 0:
+                _direction = HorizontalDir.Left;
                 _sr.flipX = true;
-
                 break;
             case > 0:
+                _direction = HorizontalDir.Right;
                 _sr.flipX = false;
                 break;
         }
@@ -87,11 +102,13 @@ public class PlayerController : MonoBehaviour
             _elapsedTime += Time.deltaTime;
             _movSpeed += _elapsedTime / 100f;
             _movSpeed = Mathf.Clamp(_movSpeed, 1f, 5f);
+            ShowRunningAnimation();
         }
         else
         {
             _movSpeed = Mathf.MoveTowards(_movSpeed, _defaultMovSpeed, 0.01f);
             _elapsedTime = 0f;
+            HideRunningAnimation();
         }
 
 
@@ -134,6 +151,29 @@ public class PlayerController : MonoBehaviour
             _anim.SetTrigger("hasPickedUpBump");
             Destroy(other.gameObject);
         }
+    }
+
+    private void ShowRunningAnimation()
+    {
+        if(IsTweaking) {
+            switch (_direction)
+            {
+                case HorizontalDir.Left:
+                    _runningRightSr.enabled = false;
+                    _runningLeftSr.enabled = true;
+                    break;
+                case HorizontalDir.Right:
+                    _runningLeftSr.enabled = false;
+                    _runningRightSr.enabled = true;
+                    break;
+            }
+        }
+    }
+
+    private void HideRunningAnimation()
+    {
+        _runningLeftSr.enabled = false;
+        _runningRightSr.enabled = false;
     }
 
     public IEnumerator PickUp(float bumpValue, int scoreInc, bool ignoreTweaking)

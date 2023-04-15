@@ -36,6 +36,7 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
+        Application.targetFrameRate = 60;
         _musicSource = _mainTheme.Play(null).GetComponent<AudioSource>();
     }
 
